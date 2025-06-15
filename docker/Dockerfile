@@ -13,19 +13,18 @@ RUN    apt-get update \
         llvm \
         pkg-config \
         sudo `# allows dev to install more packages without switching to root or rebuilding container` \
-        libssl-dev `# some vmod projects may use this` \
     && : # end of the RUN cmd - easier to keep a colon at the end of the list, than to keep the backslashes in check
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /bin
 
-# Pass in the VARNISH_VERSION_TAG build arg to specify the version of Varnish to install
-ARG VARNISH_VERSION_TAG=""
+# Pass in the VARNISH_VERSION build arg to specify the version of Varnish to install
+ARG VARNISH_VERSION=""
 
 # We need to copy justfile to a temporary directory to install Varnish.
 # Note that during the regular usage, we use justfile mapped from the host machine.
-RUN mkdir -p /init-tmp
+WORKDIR /init-tmp
 COPY ./justfile /init-tmp
-RUN cd init-tmp && just install-varnish ${VARNISH_VERSION_TAG}
+RUN just install-varnish ${VARNISH_VERSION}
 
 ARG USERNAME=user
 ARG USER_UID=1000
