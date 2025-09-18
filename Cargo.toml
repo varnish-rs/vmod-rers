@@ -1,13 +1,13 @@
 [package]
 name = "vmod_rers"
-version = "0.0.12"
+version = "0.0.13"
 edition = "2021"
 publish = false
 
 [dependencies]
 lru = "0.13.0"
 regex = "1.5"
-varnish = { version = "0.5.0", features = ["ffi"] }
+varnish = { version = "0.5.5", features = ["ffi"] }
 
 [lib]
 crate-type = ["cdylib"]

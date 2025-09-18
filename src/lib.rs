@@ -210,11 +210,19 @@ mod rers {
             Event::Load => {
                 *vp = Some(Box::new((new_vfp::<Vxp>(), new_vdp::<Vxp>())));
                 unsafe {
-                    ffi::VRT_AddFilter(ctx.raw, &vp.as_ref().unwrap().0, &vp.as_ref().unwrap().1);
+                    ffi::VRT_AddFilter(
+                        ctx.raw,
+                        &raw const vp.as_ref().unwrap().0,
+                        &raw const vp.as_ref().unwrap().1,
+                    );
                 }
             }
             Event::Discard => unsafe {
-                ffi::VRT_RemoveFilter(ctx.raw, &vp.as_ref().unwrap().0, &vp.as_ref().unwrap().1);
+                ffi::VRT_RemoveFilter(
+                    ctx.raw,
+                    &raw const vp.as_ref().unwrap().0,
+                    &raw const vp.as_ref().unwrap().1,
+                );
             },
             _ => {}
         }
