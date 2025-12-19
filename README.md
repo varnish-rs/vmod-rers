@@ -19,7 +19,7 @@ sub vcl_recv {
 	if (re_cache.is_match(req.url, "admin")) {
 		return (pass);
 	}
-	if (re_cache.capture(req.http.authorization, "(\w+) (\w+)") {
+	if (re_cache.capture(req.http.authorization, "(\w+) (\S+)")) {
 		set req.http.auth_type = re_cache.group(1);
 		set req.http.auth_credential = re_cache.group(2);
 	}
