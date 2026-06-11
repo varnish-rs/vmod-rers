@@ -21,6 +21,8 @@ import rers;
 import rers from "path/to/librers.so";
 ```
 
+## Object `init`
+
 ### Constructor `rers.init(INT cache_size = 1000)`
 
 Build a regex store, optionally specifying its size `n` (defaults to 1000). The
@@ -29,40 +31,40 @@ that wouldn't fit in it, it will remove the Least Recently Used regex to make
 space for the newcomer.
 `n` will be clamped between 1 and `usize::MAX`.
 
-#### Method `BOOL <object>.is_match(STRING s, STRING res)`
+### Method `BOOL <object>.is_match(STRING s, STRING res)`
 
 Return `true` if `regex` matches on `s`
 
-#### Method `STRING <object>.replace(STRING haystack, STRING res, STRING sub, INT limit = 0)`
+### Method `STRING <object>.replace(STRING haystack, STRING res, STRING sub, INT limit = 0)`
 
 Replace all groups matching `regex` in `s` with `sub`. If `lim` is specified,
 only the first `lim` groups are replaced.
 
-#### Method `BOOL <object>.capture_req_body(STRING res)`
+### Method `BOOL <object>.capture_req_body(STRING res)`
 
 Equivalent to `is_match()`, but remembers the captured groups so you can access
 them with `group()` later on.
 
-#### Method `BOOL <object>.capture(STRING s, STRING res)`
+### Method `BOOL <object>.capture(STRING s, STRING res)`
 
 Same as `.capture()` but works on the request body. The request must have been
 cached first (using `std.cache_req_body()` for example) or the call will fail
 and interrupt the VCL transaction. If the request body isn't valid utf8, the
 function will simply return `false`.
 
-#### Method `STRING <object>.group(INT n)`
+### Method `STRING <object>.group(INT n)`
 
 Return a captured group (from `capture()` or `capture_req_body()`) using its
 `index` or its `name`. Trying to access a non-existing group will return an
 empty string.
 
-#### Method `STRING <object>.named_group(STRING name)`
+### Method `STRING <object>.named_group(STRING name)`
 
 Return a captured (named) group (from `capture()` or `capture_req_body()`) using its
 `index` or its `name`. Trying to access a non-existing group will return an
 empty string.
 
-#### Method `VOID <object>.replace_resp_body(STRING res, STRING sub, INT limit = 0)`
+### Method `VOID <object>.replace_resp_body(STRING res, STRING sub, INT limit = 0)`
 
 Add a regex/substitute pair to use when delivering the response body to a
 client, or ingesting a body from the backend.

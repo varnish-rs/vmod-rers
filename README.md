@@ -39,6 +39,8 @@ Depending on which `varnish` version tou are targeting, select the right `vmod_r
 
 | vmod-rers | varnish |
 |:----------|:-------:|
+| v0.0.14   |   9.0+  |
+| v0.0.13   |   8.0+  |
 | v0.0.12   |   7.7   |
 | v0.0.10   |   7.6   |
 | v0.0.9    |   7.5   |

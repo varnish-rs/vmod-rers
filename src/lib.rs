@@ -26,7 +26,7 @@ mod rers {
     use std::sync::Mutex;
 
     use lru::LruCache;
-    use varnish::ffi::{self, vdp, vfp};
+    use varnish::ffi::{self, vdp, vfp, VCL_STRING};
     use varnish::vcl::{new_vdp, new_vfp, Ctx, Event};
 
     use super::{clamp_i64_to_usize, init, Captures, Direction, Vxp};
@@ -38,7 +38,7 @@ mod rers {
         /// space for the newcomer.
         /// `n` will be clamped between 1 and `usize::MAX`.
         #[must_use]
-        pub fn new(#[default(1000)] cache_size: i64) -> Self {
+        pub fn init(#[default(1000)] cache_size: i64) -> Self {
             let cap =
                 NonZeroUsize::new(clamp_i64_to_usize(cache_size)).unwrap_or(NonZeroUsize::MIN);
             init {
@@ -142,28 +142,46 @@ mod rers {
         /// `index` or its `name`. Trying to access a non-existing group will return an
         /// empty string.
         #[allow(clippy::unused_self)] // TODO: figure out why &self is not being used
-        pub fn group<'a>(
+        pub unsafe fn group(
             &self,
-            #[shared_per_task] vp: &mut Option<Box<Captures<'a>>>,
+            ctx: &mut Ctx,
+            #[shared_per_task] vp: &mut Option<Box<Captures<'_>>>,
             n: i64,
-        ) -> Option<&'a [u8]> {
-            vp.as_ref()
+        ) -> VCL_STRING {
+            let Some(bytes) = vp
+                .as_ref()
                 .and_then(|c| c.caps.get(clamp_i64_to_usize(n)))
                 .map(|m| m.as_bytes())
+            else {
+                return VCL_STRING::default();
+            };
+            ctx.ws
+                .copy_bytes_with_null(bytes)
+                .map(|t| VCL_STRING(t.b))
+                .unwrap_or_default()
         }
 
         /// Return a captured (named) group (from `capture()` or `capture_req_body()`) using its
         /// `index` or its `name`. Trying to access a non-existing group will return an
         /// empty string.
         #[allow(clippy::unused_self)] // TODO: figure out why &self is not being used
-        pub fn named_group<'a>(
+        pub unsafe fn named_group(
             &self,
-            #[shared_per_task] vp: &mut Option<Box<Captures<'a>>>,
+            ctx: &mut Ctx,
+            #[shared_per_task] vp: &mut Option<Box<Captures<'_>>>,
             name: &str,
-        ) -> Option<&'a [u8]> {
-            vp.as_ref()
+        ) -> VCL_STRING {
+            let Some(bytes) = vp
+                .as_ref()
                 .and_then(|c| c.caps.name(name))
                 .map(|m| m.as_bytes())
+            else {
+                return VCL_STRING::default();
+            };
+            ctx.ws
+                .copy_bytes_with_null(bytes)
+                .map(|t| VCL_STRING(t.b))
+                .unwrap_or_default()
         }
 
         /// Add a regex/substitute pair to use when delivering the response body to a
