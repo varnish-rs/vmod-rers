@@ -21,7 +21,7 @@ import rers;
 import rers from "path/to/librers.so";
 ```
 
-## Object `init`
+## Object `regex_cache`
 
 ### Constructor `rers.init(INT cache_size = 1000)`
 

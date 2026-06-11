@@ -29,9 +29,9 @@ mod rers {
     use varnish::ffi::{self, VCL_STRING, vdp, vfp};
     use varnish::vcl::{Ctx, Event, new_vdp, new_vfp};
 
-    use super::{Captures, Direction, Vxp, clamp_i64_to_usize, init};
+    use super::{Captures, Direction, Vxp, clamp_i64_to_usize, regex_cache};
 
-    impl init {
+    impl regex_cache {
         /// Build a regex store, optionally specifying its size `n` (defaults to 1000). The
         /// cache is a standard LRU cache, meaning that if we try to compile/access a regex
         /// that wouldn't fit in it, it will remove the Least Recently Used regex to make
@@ -41,7 +41,7 @@ mod rers {
         pub fn init(#[default(1000)] cache_size: i64) -> Self {
             let cap =
                 NonZeroUsize::new(clamp_i64_to_usize(cache_size)).unwrap_or(NonZeroUsize::MIN);
-            init {
+            regex_cache {
                 mutexed_cache: Mutex::new(LruCache::new(cap)),
             }
         }
@@ -49,8 +49,7 @@ mod rers {
         /// Return `true` if `regex` matches on `s`
         pub fn is_match(&self, s: &str, res: &str) -> bool {
             self.get_regex(res)
-                .map(|re| re.is_match(s.as_bytes()))
-                .unwrap_or(false)
+                .is_ok_and(|re| re.is_match(s.as_bytes()))
         }
 
         /// Replace all groups matching `regex` in `s` with `sub`. If `lim` is specified,
@@ -253,7 +252,7 @@ mod rers {
     }
 }
 
-impl init {
+impl regex_cache {
     fn get_regex(&self, res: &str) -> Result<Regex, String> {
         let mut lru = self.mutexed_cache.lock().unwrap();
         if lru.get(res).is_none() {
@@ -296,7 +295,7 @@ impl init {
 }
 
 #[allow(non_camel_case_types)]
-pub struct init {
+pub struct regex_cache {
     mutexed_cache: Mutex<LruCache<String, Result<Regex, String>>>,
 }
 
