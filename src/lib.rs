@@ -141,7 +141,10 @@ mod rers {
         /// Return a captured group (from `capture()` or `capture_req_body()`) using its
         /// `index` or its `name`. Trying to access a non-existing group will return an
         /// empty string.
-        #[allow(clippy::unused_self)] // TODO: figure out why &self is not being used
+        // we don't need self here because we only need access
+        // to already captured groups
+        #[allow(clippy::unused_self)]
+        #[allow(clippy::missing_safety_doc)]
         pub unsafe fn group(
             &self,
             ctx: &mut Ctx,
@@ -164,7 +167,10 @@ mod rers {
         /// Return a captured (named) group (from `capture()` or `capture_req_body()`) using its
         /// `index` or its `name`. Trying to access a non-existing group will return an
         /// empty string.
-        #[allow(clippy::unused_self)] // TODO: figure out why &self is not being used
+        // we don't need self here because we only need access
+        // to already captured groups
+        #[allow(clippy::unused_self)]
+        #[allow(clippy::missing_safety_doc)]
         pub unsafe fn named_group(
             &self,
             ctx: &mut Ctx,
