@@ -5,7 +5,7 @@ use std::sync::Mutex;
 
 use lru::LruCache;
 use regex::bytes::Regex;
-use varnish::ffi::{self, vmod_priv, vmod_priv_methods, VdpAction, VMOD_PRIV_METHODS_MAGIC};
+use varnish::ffi::{self, VMOD_PRIV_METHODS_MAGIC, VdpAction, vmod_priv, vmod_priv_methods};
 use varnish::run_vtc_tests;
 use varnish::vcl::{
     Ctx, DeliveryProcCtx, DeliveryProcessor, FetchProcCtx, FetchProcessor, InitResult, LogTag,
@@ -26,10 +26,10 @@ mod rers {
     use std::sync::Mutex;
 
     use lru::LruCache;
-    use varnish::ffi::{self, vdp, vfp, VCL_STRING};
-    use varnish::vcl::{new_vdp, new_vfp, Ctx, Event};
+    use varnish::ffi::{self, VCL_STRING, vdp, vfp};
+    use varnish::vcl::{Ctx, Event, new_vdp, new_vfp};
 
-    use super::{clamp_i64_to_usize, init, Captures, Direction, Vxp};
+    use super::{Captures, Direction, Vxp, clamp_i64_to_usize, init};
 
     impl init {
         /// Build a regex store, optionally specifying its size `n` (defaults to 1000). The
