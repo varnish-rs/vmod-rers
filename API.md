@@ -71,3 +71,13 @@ client, or ingesting a body from the backend.
 Note that you will need to include `rers` in `resp.filters` for it to
 have an effect. This function can be called multiple times, with each pair being
 called sequentially.
+
+### Method `VOID <object>.replace_req_body(STRING res, STRING sub, INT limit = 0)`
+
+Add a regex/substitute pair to use when sending the request body to the
+backend.
+Note that you will need to include `rers` in `bereq.filters` (backend side)
+for it to have an effect. This function can be
+called multiple times, with each pair being called sequentially.
+
+This function can only be called in the `backend` context.

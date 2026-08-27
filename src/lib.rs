@@ -209,22 +209,28 @@ mod rers {
             self.replace_body(ctx, res, sub, limit, direction);
         }
 
-        //        /// Add a regex/substitute pair to use when ingesting the response body from a
-        //        /// client, or delivering a body from the backend.
-        //        /// Note that you will need to include `rers` in `resp.filters` for it to
-        //        /// have an effect. This function can be called multiple times, with each pair being
-        //        /// called sequentially.
-        //        pub fn replace_req_body(&self, ctx: &mut Ctx, res: &str, sub: &str,
-        //            #[default(0)]
-        //            limit: i64,
-        //            ) {
-        //            let direction = if ctx.http_req.is_some() {
-        //                Direction::Fetch
-        //            } else {
-        //                Direction::Deliver
-        //            };
-        //            self.replace_body(ctx, res,sub, limit, direction)
-        //        }
+        /// Add a regex/substitute pair to use when sending the request body to the
+        /// backend.
+        /// Note that you will need to include `rers` in `bereq.filters` (backend side)
+        /// for it to have an effect. This function can be
+        /// called multiple times, with each pair being called sequentially.
+        ///
+        /// This function can only be called in the `backend` context.
+        #[restrict(backend)]
+        pub fn replace_req_body(
+            &self,
+            ctx: &mut Ctx,
+            res: &str,
+            sub: &str,
+            #[default(0)] limit: i64,
+        ) {
+            let direction = if ctx.http_req.as_mut().is_some() {
+                Direction::Fetch
+            } else {
+                Direction::Deliver
+            };
+            self.replace_body(ctx, res, sub, limit, direction);
+        }
     }
 
     #[event]
@@ -394,6 +400,8 @@ impl FetchProcessor for Vxp {
     fn new(vrt_ctx: &mut Ctx, _: &mut FetchProcCtx) -> InitResult<Self> {
         // we don't know how/if the body will be modified, so we nuke the content-length
         if let Some(headers) = vrt_ctx.http_beresp.as_mut() {
+            headers.unset_header("Content-Length");
+        } else if let Some(headers) = vrt_ctx.http_req.as_mut() {
             headers.unset_header("Content-Length");
         }
 
