@@ -7,7 +7,7 @@ publish = false
 [dependencies]
 lru = "0.18.0"
 regex = "1.5"
-varnish = { version = "0.7.0", features = ["ffi"] }
+varnish = { version = "0.8.0", features = ["ffi"] }
 
 [lib]
 crate-type = ["cdylib"]
